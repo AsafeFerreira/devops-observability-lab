@@ -37,7 +37,7 @@ jobs:
           go build ./cmd/worker
           go build ./cmd/integration-simulator
       - name: Upload coverage
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: go-coverage
           path: coverage.out
@@ -74,7 +74,7 @@ jobs:
           docker run --rm -i ghcr.io/yannh/kubeconform:v0.7.0 \
             -strict -summary -kubernetes-version 1.34.0 < rendered-kubernetes.yaml
       - name: Upload rendered Kubernetes manifests
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: rendered-kubernetes
           path: rendered-kubernetes.yaml
@@ -107,7 +107,7 @@ jobs:
           curl --silent http://localhost:9090/api/v1/alerts > artifacts/prometheus-alerts.json || true
       - name: Upload integration evidence
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: integration-evidence
           path: artifacts/
