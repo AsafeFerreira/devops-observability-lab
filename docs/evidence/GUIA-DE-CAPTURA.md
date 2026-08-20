@@ -48,6 +48,14 @@ Confira que estes painéis têm dados antes de capturar:
 
 Salvar como `docs/evidence/01-platform-overview.png`.
 
+O painel **Recent distributed traces** fica abaixo da dobra e só carrega
+quando entra na área visível. Role até o fim do dashboard e aguarde um
+instante antes de capturar, senão ele aparece vazio mesmo havendo traces.
+
+O tile **Firing alerts** conta alertas ativos, e os stat tiles vermelhos
+são o comportamento esperado depois de simular um incidente: eles indicam
+que a detecção funcionou, não que o ambiente está quebrado.
+
 ## 2. Logs por cliente e componente
 
 `02 - Logs by Client and Component` — http://localhost:3000/d/lab-tenant-logs
