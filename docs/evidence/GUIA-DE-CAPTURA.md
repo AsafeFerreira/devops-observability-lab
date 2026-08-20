@@ -48,9 +48,9 @@ Confira que estes painéis têm dados antes de capturar:
 
 Salvar como `docs/evidence/01-platform-overview.png`.
 
-O painel **Recent distributed traces** fica abaixo da dobra e só carrega
-quando entra na área visível. Role até o fim do dashboard e aguarde um
-instante antes de capturar, senão ele aparece vazio mesmo havendo traces.
+O painel **Recent distributed traces** fica abaixo da dobra: role até o
+fim do dashboard antes de capturar. Ele lista os traces recentes e cada
+`traceID` abre a cascata de spans no Tempo.
 
 O tile **Firing alerts** conta alertas ativos, e os stat tiles vermelhos
 são o comportamento esperado depois de simular um incidente: eles indicam
