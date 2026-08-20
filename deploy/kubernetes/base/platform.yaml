@@ -78,11 +78,24 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql
+            - name: run
+              mountPath: /var/run/postgresql
+            - name: tmp
+              mountPath: /tmp
       volumes:
         - name: data
+          emptyDir: {}
+        - name: run
+          emptyDir: {}
+        - name: tmp
           emptyDir: {}
 ---
 apiVersion: v1
@@ -164,13 +177,30 @@ spec:
             limits:
               cpu: 500m
               memory: 768Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           volumeMounts:
             - name: plugins
               mountPath: /etc/rabbitmq/enabled_plugins
               subPath: enabled_plugins
             - name: data
               mountPath: /var/lib/rabbitmq
+            - name: conf
+              mountPath: /etc/rabbitmq/conf.d
+            - name: logs
+              mountPath: /var/log/rabbitmq
+            - name: tmp
+              mountPath: /tmp
       volumes:
+        - name: conf
+          emptyDir: {}
+        - name: logs
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
         - name: plugins
           configMap:
             name: rabbitmq-plugins
@@ -244,6 +274,7 @@ spec:
               memory: 128Mi
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
 ---
@@ -318,6 +349,7 @@ spec:
               memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
 ---
@@ -390,6 +422,7 @@ spec:
               memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
 ---
@@ -464,5 +497,6 @@ spec:
               memory: 128Mi
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
