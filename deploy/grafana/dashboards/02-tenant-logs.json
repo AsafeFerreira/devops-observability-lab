@@ -1,0 +1,65 @@
+{
+  "annotations": {"list": []},
+  "description": "Logs separated by client and component. Tenant IDs remain structured metadata to avoid high-cardinality metric labels.",
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"dedupStrategy": "none", "enableInfiniteScrolling": false, "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"datasource": {"type": "loki", "uid": "loki"}, "direction": "backward", "editorMode": "code", "expr": "{service_name=~\"$service\"} | tenant_id=~\"$tenant\"", "queryType": "range", "refId": "A"}],
+      "title": "Client logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "id": 2,
+      "options": {"dedupStrategy": "none", "enableInfiniteScrolling": false, "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"datasource": {"type": "loki", "uid": "loki"}, "direction": "backward", "editorMode": "code", "expr": "{service_name=~\"$service\"} | tenant_id=~\"$tenant\" | severity_text=~\"WARN|ERROR\"", "queryType": "range", "refId": "A"}],
+      "title": "Warnings and errors",
+      "type": "logs"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "logs/s", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 18, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 2, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "normal"}, "thresholdsStyle": {"mode": "off"}}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 3,
+      "options": {"legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"hideZeros": false, "mode": "multi", "sort": "desc"}},
+      "targets": [{"datasource": {"type": "loki", "uid": "loki"}, "direction": "backward", "editorMode": "code", "expr": "sum by (service_name) (rate({service_name=~\"$service\"} | tenant_id=~\"$tenant\" [$__auto]))", "queryType": "range", "refId": "A"}],
+      "title": "Log volume by component",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "loki", "uid": "loki"},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 4,
+      "options": {"dedupStrategy": "none", "enableInfiniteScrolling": false, "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true},
+      "targets": [{"datasource": {"type": "loki", "uid": "loki"}, "direction": "backward", "editorMode": "code", "expr": "{service_name=~\"$service\"} | tenant_id=~\"$tenant\" | correlation_id=~\"$correlation\"", "queryType": "range", "refId": "A"}],
+      "title": "Correlation drill-down (open TraceID from log details)",
+      "type": "logs"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 42,
+  "tags": ["portfolio", "logs", "multi-tenant"],
+  "templating": {
+    "list": [
+      {"current": {"text": "imports-api|imports-worker|integration-simulator", "value": "imports-api|imports-worker|integration-simulator"}, "hide": 0, "label": "Component", "name": "service", "options": [{"selected": true, "text": "imports-api|imports-worker|integration-simulator", "value": "imports-api|imports-worker|integration-simulator"}], "query": "imports-api|imports-worker|integration-simulator", "skipUrlSync": false, "type": "textbox"},
+      {"current": {"text": "client-a", "value": "client-a"}, "hide": 0, "label": "Client", "name": "tenant", "options": [{"selected": true, "text": "client-a", "value": "client-a"}], "query": "client-a", "skipUrlSync": false, "type": "textbox"},
+      {"current": {"text": ".*", "value": ".*"}, "hide": 0, "label": "Correlation ID", "name": "correlation", "options": [{"selected": true, "text": ".*", "value": ".*"}], "query": ".*", "skipUrlSync": false, "type": "textbox"}
+    ]
+  },
+  "time": {"from": "now-30m", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "02 - Logs by Client and Component",
+  "uid": "lab-tenant-logs",
+  "version": 1,
+  "weekStart": ""
+}

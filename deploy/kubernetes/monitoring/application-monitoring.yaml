@@ -1,0 +1,123 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: observability-lab-applications
+  namespace: observability-lab
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [observability-lab]
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values: [imports-api, imports-worker, integration-simulator]
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: observability-lab-infrastructure
+  namespace: observability-lab
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: [observability-lab]
+  selector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values: [rabbitmq, postgres-exporter]
+  endpoints:
+    - port: metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: observability-lab
+  namespace: observability-lab
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: observability-lab-workloads
+      rules:
+        - alert: LabKubernetesDeploymentUnavailable
+          expr: kube_deployment_status_replicas_unavailable{namespace="observability-lab"} > 0
+          for: 2m
+          labels:
+            severity: critical
+            category: availability
+          annotations:
+            summary: "Deployment {{ $labels.deployment }} has unavailable replicas"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/service-down.md"
+        - alert: LabKubernetesContainerRestarting
+          expr: increase(kube_pod_container_status_restarts_total{namespace="observability-lab"}[10m]) > 2
+          for: 1m
+          labels:
+            severity: warning
+            category: availability
+          annotations:
+            summary: "Container {{ $labels.container }} is restarting repeatedly"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/service-down.md"
+        - alert: LabKubernetesWorkloadCPUHigh
+          expr: |
+            sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="observability-lab", container!=""}[5m]))
+            /
+            clamp_min(sum by (pod) (kube_pod_container_resource_limits{namespace="observability-lab", resource="cpu"}), 0.001)
+            > 0.85
+          for: 10m
+          labels:
+            severity: warning
+            category: resources
+          annotations:
+            summary: "Pod {{ $labels.pod }} CPU exceeds 85% of its limit"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/resource-pressure.md"
+        - alert: LabKubernetesWorkloadMemoryHigh
+          expr: |
+            sum by (pod) (container_memory_working_set_bytes{namespace="observability-lab", container!=""})
+            /
+            clamp_min(sum by (pod) (kube_pod_container_resource_limits{namespace="observability-lab", resource="memory"}), 1)
+            > 0.85
+          for: 10m
+          labels:
+            severity: warning
+            category: resources
+          annotations:
+            summary: "Pod {{ $labels.pod }} memory exceeds 85% of its limit"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/resource-pressure.md"
+        - alert: LabKubernetesNodeFilesystemLow
+          expr: node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} < 0.15
+          for: 10m
+          labels:
+            severity: warning
+            category: node
+          annotations:
+            summary: "Node filesystem has less than 15% free space"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/resource-pressure.md"
+    - name: observability-lab-processing
+      rules:
+        - alert: LabKubernetesIntegrationFailures
+          expr: sum(increase(lab_integration_calls_total{result="failure"}[5m])) > 3
+          for: 1m
+          labels:
+            severity: warning
+            category: integration
+          annotations:
+            summary: "Repeated external integration failures"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/integration-failure.md"
+        - alert: LabKubernetesDeadLetterQueueNotEmpty
+          expr: rabbitmq_queue_messages{queue="lab.imports.dead_letter"} > 0
+          for: 30s
+          labels:
+            severity: critical
+            category: messaging
+          annotations:
+            summary: "Dead-letter queue is not empty"
+            runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/dead-letter.md"

@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+secretGenerator:
+  - name: lab-runtime-secrets
+    literals:
+      - POSTGRES_USER=observability
+      - POSTGRES_PASSWORD=observability_dev
+      - POSTGRES_DB=observability_lab
+      - RABBITMQ_USER=observability
+      - RABBITMQ_PASSWORD=observability_dev
+      - DATABASE_URL=postgres://observability:observability_dev@postgres:5432/observability_lab?sslmode=disable
+      - RABBITMQ_URL=amqp://observability:observability_dev@rabbitmq:5672/
+      - DATA_SOURCE_NAME=postgresql://observability:observability_dev@postgres:5432/observability_lab?sslmode=disable
+generatorOptions:
+  disableNameSuffixHash: true
+images:
+  - name: devops-observability-lab/imports-api
+    newTag: local
+  - name: devops-observability-lab/imports-worker
+    newTag: local
+  - name: devops-observability-lab/integration-simulator
+    newTag: local

@@ -1,0 +1,159 @@
+groups:
+  - name: application-availability
+    rules:
+      - alert: LabServiceDown
+        expr: up{job=~"imports-api|imports-worker|integration-simulator"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: availability
+        annotations:
+          summary: "{{ $labels.job }} is unavailable"
+          description: "Prometheus has failed to scrape {{ $labels.instance }} for one minute."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/service-down.md"
+
+      - alert: LabHighHTTPErrorRate
+        expr: |
+          (
+            sum by (service) (rate(lab_http_requests_total{status=~"5.."}[5m]))
+            /
+            clamp_min(sum by (service) (rate(lab_http_requests_total[5m])), 0.001)
+          ) > 0.05
+          and sum by (service) (rate(lab_http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          category: application
+        annotations:
+          summary: "High HTTP 5xx rate on {{ $labels.service }}"
+          description: "More than 5% of requests failed during the last five minutes."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/high-error-rate.md"
+
+      - alert: LabHighHTTPP95Latency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (service, le) (rate(lab_http_request_duration_seconds_bucket{route!~"/health/.*|/metrics"}[5m]))
+          ) > 0.75
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High p95 latency on {{ $labels.service }}"
+          description: "The p95 HTTP latency has exceeded 750 ms for five minutes."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/high-latency.md"
+
+      - alert: LabApplicationMemoryHigh
+        expr: process_resident_memory_bytes{service=~"imports-api|imports-worker|integration-simulator"} > 268435456
+        for: 10m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High memory use on {{ $labels.service }}"
+          description: "Resident memory has remained above 256 MiB for ten minutes."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/resource-pressure.md"
+
+      - alert: LabApplicationCPUHigh
+        expr: rate(process_cpu_seconds_total{service=~"imports-api|imports-worker|integration-simulator"}[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High CPU use on {{ $labels.service }}"
+          description: "The process has consumed more than 0.8 CPU cores for ten minutes."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/resource-pressure.md"
+
+  - name: processing-and-integrations
+    rules:
+      - alert: LabIntegrationFailures
+        expr: sum(increase(lab_integration_calls_total{result="failure"}[5m])) > 3
+        for: 1m
+        labels:
+          severity: warning
+          category: integration
+        annotations:
+          summary: "Repeated failures in the external integration"
+          description: "More than three external calls failed in five minutes."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/integration-failure.md"
+
+      - alert: LabCircuitBreakerOpen
+        expr: lab_circuit_breaker_state == 2
+        for: 30s
+        labels:
+          severity: critical
+          category: integration
+        annotations:
+          summary: "Circuit breaker is open for {{ $labels.target }}"
+          description: "Calls are being rejected to protect the worker from a failing dependency."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/integration-failure.md"
+
+      - alert: LabImportDeadLettered
+        expr: lab_imports_current{status="DEAD_LETTER"} > 0
+        for: 30s
+        labels:
+          severity: critical
+          category: data-import
+        annotations:
+          summary: "One or more imports reached the dead-letter queue"
+          description: "Inspect the failed import and RabbitMQ dead-letter queue before replaying data."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/dead-letter.md"
+
+      - alert: LabRabbitQueueBacklog
+        expr: rabbitmq_queue_messages_ready{queue="lab.imports.process"} > 20
+        for: 3m
+        labels:
+          severity: warning
+          category: messaging
+        annotations:
+          summary: "RabbitMQ import queue backlog"
+          description: "More than 20 messages have waited for processing for three minutes."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/queue-backlog.md"
+
+      - alert: LabRabbitDeadLetterQueueNotEmpty
+        expr: rabbitmq_queue_messages{queue="lab.imports.dead_letter"} > 0
+        for: 30s
+        labels:
+          severity: critical
+          category: messaging
+        annotations:
+          summary: "RabbitMQ dead-letter queue is not empty"
+          description: "A message was rejected after processing failed."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/dead-letter.md"
+
+      - alert: LabWorkerHeartbeatMissing
+        expr: time() - lab_worker_heartbeat_timestamp_seconds{service="imports-worker"} > 60
+        for: 1m
+        labels:
+          severity: critical
+          category: processing
+        annotations:
+          summary: "Worker heartbeat is stale"
+          description: "The worker has not updated its heartbeat for more than one minute."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/service-down.md"
+
+  - name: database
+    rules:
+      - alert: LabPostgreSQLDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: database
+        annotations:
+          summary: "PostgreSQL exporter cannot reach the database"
+          description: "Database availability checks have failed for one minute."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/database-unavailable.md"
+
+      - alert: LabDatabasePoolNearLimit
+        expr: lab_db_pool_connections{state="acquired"} / clamp_min(lab_db_pool_connections{state="max"}, 1) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "Application database pool is above 80%"
+          description: "Review slow queries and connection leakage before increasing the pool."
+          runbook_url: "https://github.com/asafeferreira/devops-observability-lab/blob/main/docs/runbooks/database-unavailable.md"
