@@ -22,7 +22,7 @@ jobs:
       K6_DURATION: 30s
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Start stack
         run: |
           cp .env.example .env

@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Set up Go
         uses: actions/setup-go@v7
         with:
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Validate Compose model
         run: docker compose config --quiet
       - name: Validate Grafana dashboard JSON
@@ -87,7 +87,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Start complete stack
         run: |
           cp .env.example .env
@@ -121,7 +121,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out source
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Scan repository dependencies and secrets
         uses: aquasecurity/trivy-action@v0.36.0
         with:
