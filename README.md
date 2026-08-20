@@ -1,5 +1,7 @@
 # Kube Observability Lab
 
+[![CI](https://github.com/AsafeFerreira/devops-observability-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/AsafeFerreira/devops-observability-lab/actions/workflows/ci.yml)
+
 Plataforma multiusuário de importação assíncrona criada como projeto independente de portfólio para demonstrar infraestrutura, observabilidade e rotinas operacionais de uma aplicação web em containers e Kubernetes.
 
 O projeto não altera nem depende do Korp: ele o complementa com evidências práticas das competências de DevOps que faltavam no portfólio — Prometheus, Grafana, OpenTelemetry, Loki, Tempo, alertas, GitHub Actions, Kubernetes, carga, backup e runbooks.
