@@ -1,0 +1,78 @@
+grafana:
+  adminPassword: observability_dev
+  service:
+    type: NodePort
+    nodePort: 30000
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+      searchNamespace: ALL
+  additionalDataSources:
+    - name: Loki
+      uid: loki
+      type: loki
+      access: proxy
+      url: http://loki.monitoring.svc.cluster.local:3100
+      jsonData:
+        maxLines: 2000
+        derivedFields:
+          - name: TraceID
+            matcherType: label
+            matcherRegex: trace[_]?id
+            datasourceUid: tempo
+            url: '${__value.raw}'
+            urlDisplayLabel: View trace
+    - name: Tempo
+      uid: tempo
+      type: tempo
+      access: proxy
+      url: http://tempo.monitoring.svc.cluster.local:3200
+      jsonData:
+        tracesToLogsV2:
+          datasourceUid: loki
+          spanStartTimeShift: -2m
+          spanEndTimeShift: 2m
+          filterByTraceID: true
+          tags:
+            - key: service.name
+              value: service_name
+        serviceMap:
+          datasourceUid: prometheus
+        nodeGraph:
+          enabled: true
+
+prometheus:
+  prometheusSpec:
+    retention: 7d
+    enableRemoteWriteReceiver: true
+    enableFeatures:
+      - exemplar-storage
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    resources:
+      requests:
+        cpu: 150m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1Gi
+
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
+  tls:
+    enabled: false

@@ -1,0 +1,55 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: local
+    project: devops-observability-lab
+
+rule_files:
+  - /etc/prometheus/alerts.yaml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: [alertmanager:9093]
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: [prometheus:9090]
+
+  - job_name: imports-api
+    static_configs:
+      - targets: [imports-api:8080]
+
+  - job_name: imports-worker
+    static_configs:
+      - targets: [imports-worker:8081]
+
+  - job_name: integration-simulator
+    static_configs:
+      - targets: [integration-simulator:8082]
+
+  - job_name: postgres-exporter
+    static_configs:
+      - targets: [postgres-exporter:9187]
+
+  - job_name: rabbitmq
+    static_configs:
+      - targets: [rabbitmq:15692]
+
+  - job_name: otel-collector
+    static_configs:
+      - targets: [otel-collector:8888]
+
+  - job_name: loki
+    static_configs:
+      - targets: [loki:3100]
+
+  - job_name: tempo
+    static_configs:
+      - targets: [tempo:3200]
+
+  - job_name: alertmanager
+    static_configs:
+      - targets: [alertmanager:9093]

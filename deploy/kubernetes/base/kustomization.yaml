@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability-lab
+resources:
+  - namespace.yaml
+  - platform.yaml
+configMapGenerator:
+  - name: lab-config
+    literals:
+      - DEPLOYMENT_ENVIRONMENT=kind
+      - LOG_LEVEL=info
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.monitoring.svc.cluster.local:4318
+      - INTEGRATION_URL=http://integration-simulator:8082
+      - LAB_MODE=true
+      - PROCESSING_TIMEOUT=3s
+  - name: rabbitmq-plugins
+    literals:
+      - enabled_plugins=[rabbitmq_management,rabbitmq_prometheus].
+generatorOptions:
+  disableNameSuffixHash: true
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: devops-observability-lab

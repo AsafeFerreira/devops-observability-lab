@@ -1,0 +1,14 @@
+.env
+artifacts/*
+# Relatórios de execução reais são versionados como evidência de portfólio.
+# Dumps de banco continuam fora do Git.
+!artifacts/k6-summary.json
+!artifacts/backup-verification.json
+bin/
+coverage/
+*.out
+*.test
+.DS_Store
+.idea/
+.vscode/
+
