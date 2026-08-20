@@ -76,6 +76,13 @@ simulador, todas com status de erro, com a duração caindo a cada
 tentativa porque o simulador falha mais cedo. A importação só é marcada
 como dead-letter depois da terceira falha.
 
+No Grafana, o filtro `status = error` sobre este trace retorna
+**10 matches**, correspondendo aos dez spans marcados com erro acima. O
+span `rabbitmq consume import.requested`, de 624 ms, engloba as três
+tentativas e a espera entre elas, tornando o backoff visível na linha do
+tempo. O span final `postgres.complete_import` não tem erro: é a
+gravação do estado dead-letter depois de esgotadas as tentativas.
+
 ## 5. Alerta (Alertmanager)
 
 ```
