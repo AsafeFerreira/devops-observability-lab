@@ -22,11 +22,22 @@ correspondentes.
 | `03-trace-distribuido.png` | Trace atravessando os três serviços, com retries |
 | `04-alerta-firing.png` | Alertmanager com alertas ativos |
 | `05-alerta-resolvido.png` | Alertmanager após a recuperação |
-| `06-teste-de-carga.png` | Resumo do k6 |
-| `07-backup-restore.png` | Backup gerado, restaurado e comparado |
-| `08-ci-aprovado.png` | Execução do GitHub Actions aprovada |
+| `06-teste-de-carga.png` | Resumo do k6: 301 iterações, 0% de falhas, p95 de 7,4 ms |
+| `07-backup-restore.png` | Backup gerado, restaurado e comparado: 3643 imports |
+| `08-ci-aprovado.png` | Execução do GitHub Actions com os quatro jobs aprovados |
 
-Para mover capturas do Desktop para esta pasta com os nomes corretos:
+Todas as oito capturas estão publicadas.
+
+Para recapturar, siga o [GUIA-DE-CAPTURA.md](GUIA-DE-CAPTURA.md). Dois
+comandos imprimem evidência formatada direto no terminal:
+
+```sh
+make alert-cycle   # ciclo firing -> resolved registrado pelo alert recorder
+make backup        # dump, restauração em banco temporário e comparação
+```
+
+Para mover novas capturas de `~/Documents` para esta pasta com os nomes
+corretos:
 
 ```sh
 sh scripts/publish-evidence.sh

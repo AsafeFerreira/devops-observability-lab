@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help setup fmt lint test compose-validate up down smoke integration load backup kind-up kind-down
+.PHONY: help setup fmt lint test compose-validate up down smoke integration load backup alert-cycle kind-up kind-down
 
 help: ## List available targets.
 	@awk 'BEGIN {FS = ":.*## "; printf "Available targets:\n"} /^[a-zA-Z_-]+:.*?## / {printf "  %-18s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -34,6 +34,9 @@ integration: ## Execute successful, idempotent and failed import scenarios.
 
 load: ## Execute the k6 load test and save reports under artifacts/.
 	./scripts/load-test.sh
+
+alert-cycle: ## Print the last firing/resolved cycle recorded by the alert recorder.
+	sh scripts/alert-cycle.sh $(ALERT) $(INSTANCE)
 
 backup: ## Dump, restore and compare the PostgreSQL database safely.
 	./scripts/verify-backup.sh

@@ -1,8 +1,18 @@
 # Guia de captura de evidências
 
-Passo a passo para gerar as imagens que faltam em `docs/evidence/`.
+Passo a passo para reproduzir as imagens de `docs/evidence/`. As oito
+capturas já estão publicadas; este guia permite refazê-las depois de
+mudanças no laboratório.
+
 Siga na ordem: os três primeiros itens dependem do ambiente com tráfego,
-e os dois últimos dependem de disparar e resolver um alerta.
+e os dois seguintes dependem de disparar e resolver um alerta.
+
+Para as capturas de terminal (5, 6 e 7), limpe a tela antes para que a
+imagem contenha apenas o comando e sua saída:
+
+```sh
+clear && make alert-cycle
+```
 
 ## Antes de começar
 
@@ -119,11 +129,19 @@ Aguarde cerca de um minuto. O alerta sai da lista de ativos no
 Alertmanager. Para a evidência textual do ciclo completo:
 
 ```sh
-sh scripts/simulate-failure.sh evidence
+make alert-cycle
 ```
 
-Esse comando imprime os eventos `firing` e `resolved` com horários
-reais, registrados pelo alert recorder.
+Esse comando imprime os eventos `firing` e `resolved` do mesmo alerta
+com horários reais e a duração calculada, a partir do registro do alert
+recorder. Para inspecionar outro alerta:
+
+```sh
+make alert-cycle ALERT=LabImportDeadLettered INSTANCE=imports-worker:8081
+```
+
+A saída formatada rende uma captura melhor do que a lista vazia do
+Alertmanager, porque prova o ciclo inteiro e não apenas o estado final.
 
 Salvar como `docs/evidence/05-alerta-resolvido.png`.
 
@@ -134,7 +152,8 @@ make load
 ```
 
 Ao final, `artifacts/k6-summary.json` traz os números da execução.
-Capture o resumo impresso no terminal.
+Capture o resumo impresso no terminal, que inclui a configuração do
+cenário e a linha `Load test: failed=... p95=...`.
 
 Salvar como `docs/evidence/06-teste-de-carga.png`.
 
@@ -144,8 +163,9 @@ Salvar como `docs/evidence/06-teste-de-carga.png`.
 make backup
 ```
 
-O script gera o dump, restaura em banco temporário, compara a contagem
-de registros e remove apenas os recursos que ele mesmo criou.
+O script imprime as cinco etapas do procedimento, o nome do banco
+temporário criado e a comparação de contagens entre origem e
+restauração, terminando em `RESULTADO: PASS`.
 
 Salvar como `docs/evidence/07-backup-restore.png`.
 

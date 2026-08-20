@@ -67,12 +67,41 @@ FAIL Imports worker (http://localhost:18081/health/ready)
 Após o restabelecimento, `up{job="imports-worker"}` voltou a `1` e a
 lista de alertas ativos ficou vazia.
 
+## Repetição do cenário às 02:15
+
+O mesmo incidente foi reproduzido durante a captura das evidências,
+confirmando que o comportamento é determinístico:
+
+| Horário (UTC) | Evento |
+| --- | --- |
+| 02:15:45 | `LabServiceDown` entra em **firing** |
+| 02:19:15 | `LabServiceDown` registrado como **resolved** |
+
+Ciclo de 3m30s, com o mesmo `for: 60s` de detecção. As capturas abaixo
+correspondem a esta repetição.
+
+O ciclo pode ser impresso a qualquer momento a partir do registro do
+alert recorder:
+
+```sh
+make alert-cycle
+```
+
 ## Capturas
 
 ### Alertas disparados
 
-![Alertmanager com os dois alertas em firing](04-alerta-firing.png)
+![Alertmanager com LabServiceDown e LabIntegrationFailures em firing, com severidade, labels e link para o runbook](04-alerta-firing.png)
 
-### Após a recuperação
+Captura do Alertmanager às 02:16, mostrando `LabServiceDown` com
+severidade `critical` na instância `imports-worker:8081` e
+`LabIntegrationFailures` com severidade `warning`, cada um com seu
+`runbook_url`.
 
-![Alertmanager sem alertas ativos](05-alerta-resolvido.png)
+### Ciclo completo registrado
+
+![Saída de make alert-cycle mostrando firing às 02:15:45 e resolved às 02:19:15](05-alerta-resolvido.png)
+
+Saída de `make alert-cycle` com os dois eventos do mesmo alerta: o
+registro `FIRING` com `endsAt` em aberto e o `RESOLVED` com `endsAt`
+preenchido em `02:19:15`, encerrado automaticamente após o worker voltar.

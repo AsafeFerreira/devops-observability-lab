@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
-# Move capturas do Desktop para docs/evidence e reporta o que ainda falta.
+# Move capturas de ~/Documents para docs/evidence e reporta o que ainda falta.
 # Uso: sh scripts/publish-evidence.sh
 set -eu
 
 dest="docs/evidence"
-src="${EVIDENCE_SRC:-$HOME/Desktop}"
+src="${EVIDENCE_SRC:-$HOME/Documents}"
 
 esperados="01-platform-overview 02-logs-por-cliente 03-trace-distribuido \
 04-alerta-firing 05-alerta-resolvido 06-teste-de-carga 07-backup-restore 08-ci-aprovado"

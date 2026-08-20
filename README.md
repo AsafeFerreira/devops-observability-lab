@@ -162,10 +162,14 @@ comandos usados e os valores obtidos por consulta às APIs.
 | Cenário | Resultado verificado |
 | --- | --- |
 | [Falha de integração](docs/evidence/incident-2026-08-20-dead-letter.md) | Trace com 15 spans e 10 marcados como erro, mostrando três tentativas de retry antes do dead-letter |
-| [Indisponibilidade de serviço](docs/evidence/incident-2026-08-20-service-down.md) | Ciclo `firing` às 01:44:49 e `resolved` às 01:47:49, com detecção após o `for: 60s` da regra |
-| [Teste de carga](docs/evidence/operations-2026-08-20.md#teste-de-carga-k6) | 301 iterações, 0,00% de falhas e p95 de 9,52 ms contra um limite de 750 ms |
-| [Backup e restauração](docs/evidence/operations-2026-08-20.md#verificação-de-backup-e-restauração) | 2262 importações restauradas em banco temporário e comparadas, com limpeza conferida |
+| [Indisponibilidade de serviço](docs/evidence/incident-2026-08-20-service-down.md) | Ciclo `firing` às 02:15:45 e `resolved` às 02:19:15, com detecção após o `for: 60s` da regra |
+| [Teste de carga](docs/evidence/operations-2026-08-20.md#teste-de-carga-k6) | 301 iterações, 0,00% de falhas e p95 de 7,4 ms contra um limite de 750 ms |
+| [Backup e restauração](docs/evidence/operations-2026-08-20.md#verificação-de-backup-e-restauração) | 3643 importações restauradas em banco temporário e comparadas, com limpeza conferida |
 | [Integração contínua](docs/evidence/operations-2026-08-20.md#integração-contínua) | Quatro jobs aprovados, com relatórios publicados como artifacts |
+
+As oito capturas de tela estão publicadas em
+[docs/evidence/](docs/evidence/): dashboards, logs por cliente, trace
+distribuído, alerta disparado e resolvido, carga, backup e CI aprovado.
 
 Nenhuma imagem foi montada e nenhum número foi estimado. Os cenários são
 reproduzíveis com os comandos descritos em cada documento.
