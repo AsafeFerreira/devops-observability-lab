@@ -1,11 +1,14 @@
 #!/usr/bin/env sh
 set -eu
 
+# Serviços como Loki e Tempo respondem 503 até ficarem prontos, e cada
+# tentativa do --retry imprimiria uma linha de erro. O silêncio é
+# intencional: a falha real aparece no FAIL abaixo, com a URL.
 check() {
   name="$1"
   url="$2"
-  if curl --silent --show-error --fail --max-time 5 \
-    --retry 20 --retry-delay 1 --retry-all-errors "$url" >/dev/null; then
+  if curl --silent --fail --max-time 5 \
+    --retry 20 --retry-delay 1 --retry-all-errors "$url" >/dev/null 2>&1; then
     printf 'OK   %s\n' "$name"
   else
     printf 'FAIL %s (%s)\n' "$name" "$url" >&2

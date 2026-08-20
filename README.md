@@ -59,7 +59,7 @@ Detalhes de decisões, fluxo e modelo de telemetria estão em [docs/architecture
 
 ## Início rápido com Docker Compose
 
-Pré-requisitos: Docker com Compose v2, `curl`, `python3` e, para desenvolvimento, Go 1.26.5.
+Pré-requisitos: Docker com Compose v2, `curl`, `python3` 3.9 ou superior e, para desenvolvimento, Go 1.26.5.
 
 ```bash
 make setup
@@ -67,6 +67,11 @@ make up
 make smoke
 make integration
 ```
+
+O primeiro `make up` compila as imagens Go e baixa as da stack de
+observabilidade, o que costuma levar alguns minutos. As execuções
+seguintes reaproveitam o cache e sobem em menos de um minuto. O comando
+só retorna quando todos os serviços passam no health check.
 
 Depois, acesse:
 
