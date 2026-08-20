@@ -67,8 +67,12 @@ FAIL Imports worker (http://localhost:18081/health/ready)
 Após o restabelecimento, `up{job="imports-worker"}` voltou a `1` e a
 lista de alertas ativos ficou vazia.
 
-## Capturas de tela pendentes
+## Capturas
 
-- [ ] Alertmanager com os dois alertas em firing
-- [ ] Dashboard de visão geral com os tiles alterados
-- [ ] Alertmanager sem alertas ativos após a recuperação
+### Alertas disparados
+
+![Alertmanager com os dois alertas em firing](04-alerta-firing.png)
+
+### Após a recuperação
+
+![Alertmanager sem alertas ativos](05-alerta-resolvido.png)

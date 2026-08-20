@@ -98,13 +98,19 @@ recorder e pode ser consultado com:
 sh scripts/simulate-failure.sh evidence
 ```
 
-## Capturas de tela pendentes
+## Capturas
 
-As consultas acima já comprovam o comportamento por API. Faltam as
-imagens correspondentes:
+As consultas acima comprovam o comportamento por API; as imagens abaixo
+registram as mesmas informações na interface.
 
-- [ ] Grafana `01 - Platform Overview` com o pico de falhas
-- [ ] Grafana `02 - Logs by Client and Component` filtrado por `client-a`
-- [ ] Tempo exibindo o trace `df54d20068d3a9bb2d31617600ec81d3`
-- [ ] Alertmanager com `LabImportDeadLettered` em firing
-- [ ] Alertmanager após a resolução do alerta
+### Visão geral da plataforma
+
+![Dashboard de visão geral](01-platform-overview.png)
+
+### Logs por cliente e componente
+
+![Logs por cliente](02-logs-por-cliente.png)
+
+### Trace distribuído com as tentativas de retry
+
+![Trace distribuído](03-trace-distribuido.png)

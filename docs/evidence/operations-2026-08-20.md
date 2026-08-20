@@ -72,8 +72,16 @@ O job de integração sobe a stack completa no runner, aguarda os health
 checks, executa smoke test e cenários ponta a ponta, verifica o backup e
 encerra os containers mesmo em caso de falha.
 
-## Capturas de tela pendentes
+## Capturas
 
-- [ ] Terminal com o resumo do k6
-- [ ] Terminal com a saída da verificação de backup
-- [ ] Página do GitHub Actions com os quatro jobs aprovados
+### Teste de carga
+
+![Resumo do k6](06-teste-de-carga.png)
+
+### Verificação de backup
+
+![Verificação de backup](07-backup-restore.png)
+
+### Integração contínua
+
+![GitHub Actions com os quatro jobs aprovados](08-ci-aprovado.png)

@@ -154,6 +154,22 @@ Os dashboards são provisionados em código:
 
 As regras Prometheus possuem severidade, categoria, descrição e link para o runbook correspondente. O inventário e a forma de provar cada cenário estão em [docs/observability.md](docs/observability.md) e [docs/evidence/README.md](docs/evidence/README.md).
 
+## Evidências
+
+Execuções reais registradas em [docs/evidence/](docs/evidence/), com os
+comandos usados e os valores obtidos por consulta às APIs.
+
+| Cenário | Resultado verificado |
+| --- | --- |
+| [Falha de integração](docs/evidence/incident-2026-08-20-dead-letter.md) | Trace com 15 spans e 10 marcados como erro, mostrando três tentativas de retry antes do dead-letter |
+| [Indisponibilidade de serviço](docs/evidence/incident-2026-08-20-service-down.md) | Ciclo `firing` às 01:44:49 e `resolved` às 01:47:49, com detecção após o `for: 60s` da regra |
+| [Teste de carga](docs/evidence/operations-2026-08-20.md#teste-de-carga-k6) | 301 iterações, 0,00% de falhas e p95 de 9,52 ms contra um limite de 750 ms |
+| [Backup e restauração](docs/evidence/operations-2026-08-20.md#verificação-de-backup-e-restauração) | 2262 importações restauradas em banco temporário e comparadas, com limpeza conferida |
+| [Integração contínua](docs/evidence/operations-2026-08-20.md#integração-contínua) | Quatro jobs aprovados, com relatórios publicados como artifacts |
+
+Nenhuma imagem foi montada e nenhum número foi estimado. Os cenários são
+reproduzíveis com os comandos descritos em cada documento.
+
 ## Como este projeto se encaixa na vaga
 
 | Atividade ou requisito | Evidência neste repositório |
