@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.12
-FROM golang:1.26.5-alpine3.23 AS build
+FROM golang:1.27.1-alpine3.23 AS build
 
 ARG SERVICE
 WORKDIR /src
